@@ -25,6 +25,20 @@ describe ReputationSystem::FinderMethods do
     @phrase = Phrase.create!(:text => "One")
   end
 
+  describe "#scope_with_reputation" do
+    before do
+      @question.add_evaluation(:total_votes, 3, @user)
+      @question2 = Question.create!(:text => 'Does this work?', :author_id => @user.id)
+      @question2.add_evaluation(:total_votes, 6, @user)
+    end
+
+    it "should return scoped result with given reputation" do
+      res = Question.scope_with_reputation(:total_votes, :all, {})
+      res.first.should eq(@question)
+      res.should be_kind_of(ActiveRecord::Relation)
+    end
+  end
+
   describe "#find_with_reputation" do
     context "Without Scopes" do
       before :each do
@@ -55,8 +69,8 @@ describe ReputationSystem::FinderMethods do
         res = Question.find_with_reputation(:total_votes, :all, {
           :select => "questions.*, users.name AS user_name",
           :joins => "JOIN users ON questions.author_id = users.id"})
-        res.should == [@question]
-        res[0].user_name.should == @user.name
+          res.should == [@question]
+          res[0].user_name.should == @user.name
       end
     end
 
@@ -144,8 +158,8 @@ describe ReputationSystem::FinderMethods do
         res = Question.find_with_normalized_reputation(:total_votes, :all, {
           :select => "questions.*, users.name AS user_name",
           :joins => "JOIN users ON questions.author_id = users.id"})
-        res.should == [@question]
-        res[0].user_name.should == @user.name
+          res.should == [@question]
+          res[0].user_name.should == @user.name
       end
     end
 
@@ -172,12 +186,12 @@ describe ReputationSystem::FinderMethods do
         :joins => "JOIN users ON questions.author_id = users.id",
         :conditions => "COALESCE(rs_reputations.value, 0) > 0.6",
         :order => "total_votes"})
-      sql.should ==
-        "SELECT questions.*, users.name AS user_name, COALESCE(rs_reputations.value, 0) AS total_votes "\
-        "FROM \"questions\" JOIN users ON questions.author_id = users.id "\
-        "LEFT JOIN rs_reputations ON questions.id = rs_reputations.target_id AND rs_reputations.target_type = 'Question' AND rs_reputations.reputation_name = 'total_votes' AND rs_reputations.active = 't' "\
-        "WHERE (COALESCE(rs_reputations.value, 0) > 0.6) "\
-        "ORDER BY total_votes"
+        sql.should ==
+          "SELECT questions.*, users.name AS user_name, COALESCE(rs_reputations.value, 0) AS total_votes "\
+          "FROM \"questions\" JOIN users ON questions.author_id = users.id "\
+          "LEFT JOIN rs_reputations ON questions.id = rs_reputations.target_id AND rs_reputations.target_type = 'Question' AND rs_reputations.reputation_name = 'total_votes' AND rs_reputations.active = 't' "\
+          "WHERE (COALESCE(rs_reputations.value, 0) > 0.6) "\
+          "ORDER BY total_votes"
     end
   end
 end

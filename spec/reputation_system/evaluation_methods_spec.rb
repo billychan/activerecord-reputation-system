@@ -86,6 +86,25 @@ describe ReputationSystem::EvaluationMethods do
       end
     end
 
+    describe ".scope_evaluated_by" do
+      it "should return an empty array if it is not evaluated by a given source" do
+        Question.scope_evaluated_by(:total_votes, @user).should == []
+      end
+
+      it "should return an ActiveRecord Relation object of targets evaluated by a given source" do
+        user2 = User.create!(:name => 'katsuya')
+        question2 = Question.create!(:text => 'Question 2', :author_id => @user.id)
+        question3 = Question.create!(:text => 'Question 3', :author_id => @user.id)
+        @question.add_evaluation(:total_votes, 1, @user).should be_true
+        question2.add_evaluation(:total_votes, 2, user2).should be_true
+        question3.add_evaluation(:total_votes, 3, @user).should be_true
+        Question.scope_evaluated_by(:total_votes, @user).should be_kind_of(ActiveRecord::Relation)
+        Question.scope_evaluated_by(:total_votes, @user).to_a.should include(@question)
+        Question.scope_evaluated_by(:total_votes, @user).to_a.should include(question3)
+        Question.scope_evaluated_by(:total_votes, user2).should include(question2)
+      end
+    end
+
     describe "#evaluators_for" do
       it "should return an empty array if it is not evaluated for a given reputation" do
         @question.evaluators_for(:total_votes).should == []

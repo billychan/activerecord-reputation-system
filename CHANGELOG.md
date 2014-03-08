@@ -1,3 +1,9 @@
+## Fork by Billy
+
+* Add `scope_with_reputation` - Similar method to `find_with_reputation` but returns ActiveRecord::Relation object, and then can be chained.
+
+* Add `scope_evaluated_by` - Similar method to `evaluated_by` but returns ActiveRecord::Relation object, and then can be chained.
+
 ## ActiveRecordReputationSystem 2.0.2 ##
 
 * Fix a bug associated with `add_or_update_evaluation` method that happens when source uses STI.
