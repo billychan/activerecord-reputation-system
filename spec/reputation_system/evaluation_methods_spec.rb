@@ -103,6 +103,7 @@ describe ReputationSystem::EvaluationMethods do
         res.should be_kind_of(ActiveRecord::Relation)
         res.to_a.should include(@question)
         res.to_a.should include(@question3)
+        res.to_a.should_not include(@question2)
       end
 
       # it "returns extra attribute `evaluated_at`" do

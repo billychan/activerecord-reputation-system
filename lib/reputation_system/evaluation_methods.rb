@@ -32,14 +32,9 @@ module ReputationSystem
       # Aslo returns evaluated_at attribute
       def scope_evaluated_by(reputation_name, source, *args)
         scope = args.first
-        srn = ReputationSystem::Network.get_scoped_reputation_name(self.name, reputation_name, scope)
         source_type = source.class.name
-        # evaluated_at = "rs_evaluations.created_at AS evaluated_at"
-        # select_query = sanitize_sql_array(["%s.*, #{evaluated_at}", self.table_name])
-        # joins_query = sanitize_sql_array(["JOIN rs_evaluations ON %s.id = rs_evaluations.target_id AND rs_evaluations.target_type = ? AND rs_evaluations.reputation_name = ? AND rs_evaluations.source_id = ? AND rs_evaluations.source_type = ?", self.name, srn.to_s, source.id, source_type])
-        # joins_query = sanitize_sql_array([joins_query, self.table_name])
-        # select(select_query).joins(joins_query)
-        includes(:evaluations)
+        conditions = sanitize_sql_array(["rs_evaluations.reputation_name = ? AND rs_evaluations.source_id = ? AND rs_evaluations.source_type= ?", reputation_name, source.id, source_type])
+        includes(:evaluations).where(conditions)
       end
 
       # For not to have hard dependency on above method,
