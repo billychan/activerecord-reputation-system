@@ -28,17 +28,22 @@ module ReputationSystem
         find(:all, options) 
       end
 
+      # Scoped ActiveRecord::Relation object
+      # Aslo returns evaluated_at attribute
       def scope_evaluated_by(reputation_name, source, *args)
         scope = args.first
         srn = ReputationSystem::Network.get_scoped_reputation_name(self.name, reputation_name, scope)
         source_type = source.class.name
-        options = {}
-        select_query ||= sanitize_sql_array(["%s.*", self.table_name])
-        joins_query = sanitize_sql_array(["JOIN rs_evaluations ON %s.id = rs_evaluations.target_id AND rs_evaluations.target_type = ? AND rs_evaluations.reputation_name = ? AND rs_evaluations.source_id = ? AND rs_evaluations.source_type = ?", self.name, srn.to_s, source.id, source_type])
-        joins_query = sanitize_sql_array([joins_query, self.table_name])
-        select(select_query).joins(joins_query)
+        # evaluated_at = "rs_evaluations.created_at AS evaluated_at"
+        # select_query = sanitize_sql_array(["%s.*, #{evaluated_at}", self.table_name])
+        # joins_query = sanitize_sql_array(["JOIN rs_evaluations ON %s.id = rs_evaluations.target_id AND rs_evaluations.target_type = ? AND rs_evaluations.reputation_name = ? AND rs_evaluations.source_id = ? AND rs_evaluations.source_type = ?", self.name, srn.to_s, source.id, source_type])
+        # joins_query = sanitize_sql_array([joins_query, self.table_name])
+        # select(select_query).joins(joins_query)
+        includes(:evaluations)
       end
 
+      # For not to have hard dependency on above method,
+      # this method use 'rs_evaluations.created_at' instead of 'evaluated_at'
       def order_by_evaluation_time(sort='DESC')
         order_query = "rs_evaluations.created_at #{sort}"
         order(order_query)

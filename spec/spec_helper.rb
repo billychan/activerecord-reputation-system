@@ -18,6 +18,7 @@ require 'active_record'
 require 'database_cleaner'
 require 'sqlite3'
 require 'reputation_system'
+require 'pry'
 
 DELTA = 0.000001
 

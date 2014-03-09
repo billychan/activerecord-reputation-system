@@ -87,22 +87,31 @@ describe ReputationSystem::EvaluationMethods do
     end
 
     describe "#scope_evaluated_by" do
-      it "should return an empty array if it is not evaluated by a given source" do
-        Question.scope_evaluated_by(:total_votes, @user).should == []
+      before do
+        @user2 = User.create!(:name => 'katsuya')
+        @question2 = Question.create!(text: 'Question 2', author_id: @user.id)
+        @question3 = Question.create!(text: 'Question 3', author_id: @user.id)
+        sleep 1
+        @question.add_evaluation(:total_votes, 1, @user)
+        @question2.add_evaluation(:total_votes, 2, @user2)
+        @question3.add_evaluation(:total_votes, 3, @user)
       end
 
+      let(:res){ Question.scope_evaluated_by(:total_votes, @user) }
+
       it "should return an ActiveRecord Relation object of targets evaluated by a given source" do
-        user2 = User.create!(:name => 'katsuya')
-        question2 = Question.create!(:text => 'Question 2', :author_id => @user.id)
-        question3 = Question.create!(:text => 'Question 3', :author_id => @user.id)
-        @question.add_evaluation(:total_votes, 1, @user)
-        question2.add_evaluation(:total_votes, 2, user2)
-        question3.add_evaluation(:total_votes, 3, @user)
-        Question.scope_evaluated_by(:total_votes, @user).should be_kind_of(ActiveRecord::Relation)
-        Question.scope_evaluated_by(:total_votes, @user).to_a.should include(@question)
-        Question.scope_evaluated_by(:total_votes, @user).to_a.should include(question3)
-        Question.scope_evaluated_by(:total_votes, user2).should include(question2)
+        res.should be_kind_of(ActiveRecord::Relation)
+        res.to_a.should include(@question)
+        res.to_a.should include(@question3)
       end
+
+      # it "returns extra attribute `evaluated_at`" do
+      #   record = res.first
+      #   binding.pry
+      #   expect(record.evaluated_at).to be_kind_of(Time)
+      #   expect(record.created_at).to be_kind_of(Time)
+      #   expect(record.evaluated_at).to be > (res.created_at)
+      # end
     end
 
     describe "#order_by_evaluation_time" do
