@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.has_rdoc = true
   s.summary = "ActiveRecord Reputation System gem allows rails apps to compute and publish reputation scores for active record models"
 
-  s.add_development_dependency 'activerecord', '~> 4.0.2'
+  s.add_development_dependency 'activerecord', '~> 3.2.16'
   s.add_development_dependency 'rake'
   s.add_development_dependency 'rspec'
   s.add_development_dependency 'rdoc'
