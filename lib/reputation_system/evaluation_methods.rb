@@ -29,7 +29,14 @@ module ReputationSystem
       end
 
       # Scoped ActiveRecord::Relation object
-      # Aslo returns evaluated_at attribute
+      # Aslo includes evaluations
+      #
+      # Demo code to get attribute of evaluations(say created_at)
+      #   # Use case: List a user's votes ordered by action time 
+      #   questions = Question.scope_evaluated_by(:total_votes, user)
+      #   question.each do |question|
+      #     puts question.evaluations.first.created_at
+      #   end
       def scope_evaluated_by(reputation_name, source, *args)
         scope = args.first
         source_type = source.class.name

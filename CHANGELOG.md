@@ -1,5 +1,7 @@
 ## Fork by Billy
 
+The following bullets sort by time ASC
+
 * Add `scope_with_reputation` - Similar method to `find_with_reputation` but returns ActiveRecord::Relation object, and then can be chained.
 
 * Add `scope_evaluated_by` - Similar method to `evaluated_by` but returns ActiveRecord::Relation object, and then can be chained.
@@ -23,6 +25,13 @@ Question.scope_with_reputation(:total_votes, @user)
   .order_by_evaluation_time('ASC')
 #=> Return resutls sorted by the time they got voted, ordered by requested
 ```
+
+* Upgrade to Rails 4 thanks to NARKOZ's fork
+
+* Improved scope_with_reputation - Simplified code using `includes`
+
+* Being able to retrieve reputation's created_at time
+
 
 ## ActiveRecordReputationSystem 2.0.2 ##
 

@@ -106,13 +106,13 @@ describe ReputationSystem::EvaluationMethods do
         res.to_a.should_not include(@question2)
       end
 
-      # it "returns extra attribute `evaluated_at`" do
-      #   record = res.first
-      #   binding.pry
-      #   expect(record.evaluated_at).to be_kind_of(Time)
-      #   expect(record.created_at).to be_kind_of(Time)
-      #   expect(record.evaluated_at).to be > (res.created_at)
-      # end
+      it "could get the time when evaluated" do
+        record = res.first
+        evaluation_time = record.evaluations.first.created_at
+        expect(evaluation_time).to be_kind_of(Time)
+        expect(record.created_at).to be_kind_of(Time)
+        expect(evaluation_time).to be > (record.created_at)
+      end
     end
 
     describe "#order_by_evaluation_time" do

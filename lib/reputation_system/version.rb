@@ -15,5 +15,5 @@
 ##
 
 module ReputationSystem
-  VERSION = "2.0.2.beta2"
+  VERSION = "2.0.2.beta3"
 end
