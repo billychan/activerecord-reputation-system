@@ -38,6 +38,11 @@ module ReputationSystem
         joins_query = sanitize_sql_array([joins_query, self.table_name])
         select(select_query).joins(joins_query)
       end
+
+      def order_by_evaluation_time(sort='DESC')
+        order_query = "rs_evaluations.created_at #{sort}"
+        order(order_query)
+      end
     end
 
     def self.included(klass)

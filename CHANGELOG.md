@@ -4,6 +4,26 @@
 
 * Add `scope_evaluated_by` - Similar method to `evaluated_by` but returns ActiveRecord::Relation object, and then can be chained.
 
+```ruby
+Question.scope_with_reputation(:total_votes, @user)
+```
+
+* Add `order_by_evaluation_time` - Chained with `scope_evaluated_by` to return
+ordered results.
+
+Usage:
+
+```ruby
+
+Question.scope_with_reputation(:total_votes, @user)
+  .order_by_evaluation_time
+#=> Return resutls sorted by the time they got voted by DESC as default
+
+Question.scope_with_reputation(:total_votes, @user)
+  .order_by_evaluation_time('ASC')
+#=> Return resutls sorted by the time they got voted, ordered by requested
+```
+
 ## ActiveRecordReputationSystem 2.0.2 ##
 
 * Fix a bug associated with `add_or_update_evaluation` method that happens when source uses STI.

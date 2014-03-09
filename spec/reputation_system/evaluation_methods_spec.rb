@@ -86,7 +86,7 @@ describe ReputationSystem::EvaluationMethods do
       end
     end
 
-    describe ".scope_evaluated_by" do
+    describe "#scope_evaluated_by" do
       it "should return an empty array if it is not evaluated by a given source" do
         Question.scope_evaluated_by(:total_votes, @user).should == []
       end
@@ -95,13 +95,40 @@ describe ReputationSystem::EvaluationMethods do
         user2 = User.create!(:name => 'katsuya')
         question2 = Question.create!(:text => 'Question 2', :author_id => @user.id)
         question3 = Question.create!(:text => 'Question 3', :author_id => @user.id)
-        @question.add_evaluation(:total_votes, 1, @user).should be_true
-        question2.add_evaluation(:total_votes, 2, user2).should be_true
-        question3.add_evaluation(:total_votes, 3, @user).should be_true
+        @question.add_evaluation(:total_votes, 1, @user)
+        question2.add_evaluation(:total_votes, 2, user2)
+        question3.add_evaluation(:total_votes, 3, @user)
         Question.scope_evaluated_by(:total_votes, @user).should be_kind_of(ActiveRecord::Relation)
         Question.scope_evaluated_by(:total_votes, @user).to_a.should include(@question)
         Question.scope_evaluated_by(:total_votes, @user).to_a.should include(question3)
         Question.scope_evaluated_by(:total_votes, user2).should include(question2)
+      end
+    end
+
+    describe "#order_by_evaluation_time" do
+      before do
+        @question2 = Question.create!(text: 'Question 2', author_id: @user.id)
+        @question3 = Question.create!(text: 'Question 3', author_id: @user.id)
+        @question.add_evaluation(:total_votes, 1, @user)
+        sleep 1
+        @question2.add_evaluation(:total_votes, 2, @user)
+        sleep 1
+        @question3.add_evaluation(:total_votes, 3, @user)
+        @scope = Question.scope_evaluated_by(:total_votes, @user)
+      end
+
+      it "should return DESC ordered object with latest at first" do
+        res = @scope.order_by_evaluation_time
+        res.should be_kind_of(ActiveRecord::Relation)
+        res[0].should eq(@question3)
+        res[2].should eq(@question)
+      end
+
+      it "can return ASC order" do
+        res = @scope.order_by_evaluation_time("ASC")
+        res.should be_kind_of(ActiveRecord::Relation)
+        res[0].should eq(@question)
+        res[2].should eq(@question3)
       end
     end
 
